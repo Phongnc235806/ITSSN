@@ -1,0 +1,91 @@
+# ==========================================
+# Hanoi Navi-Taxi / ハノイ・ナビタクシー
+# Application Configuration
+# ==========================================
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: hanoi-navi-taxi
+
+  # --- Database Configuration (MySQL) ---
+  datasource:
+    url: jdbc:mysql://localhost:3306/navitaxi_db?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # --- JPA / Hibernate ---
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  # --- Flyway Migration ---
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # --- Thymeleaf ---
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+
+  # --- Internationalization (i18n) ---
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+# --- JWT Configuration ---
+jwt:
+  secret: NaviTaxiHanoi2024SecretKeyForJWTTokenGenerationMustBeLongEnough256Bits!!
+  expiration: 86400000  # 24 hours in milliseconds
+
+# --- Google Maps API ---
+google:
+  maps:
+    api-key: AIzaSyD9AOLzJarLIGW0b-eWq_JEVDf0IcmxE0U
+
+# --- Fare Configuration (VND) ---
+fare:
+  compact:
+    base: 15000
+    per-km-short: 12000
+    per-km-long: 10000
+  sedan:
+    base: 20000
+    per-km-short: 15000
+    per-km-long: 12000
+  suv:
+    base: 25000
+    per-km-short: 18000
+    per-km-long: 15000
+  premium:
+    base: 35000
+    per-km-short: 25000
+    per-km-long: 20000
+  long-distance-threshold: 30  # km
+
+# --- Springdoc / Swagger ---
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+
+# --- Logging ---
+logging:
+  level:
+    com.navitaxi: DEBUG
+    org.springframework.security: DEBUG

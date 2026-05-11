@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ホーム - ハノイ・ナビタクシー / Trang chủ - Hanoi Navi-Taxi">
+    <title>ホーム / Trang chủ - ハノイ・ナビタクシー</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="icon">🚕</span>
+        <span>ハノイ・ナビタクシー</span>
+    </div>
+    <div class="navbar-user">
+        <div class="lang-switcher" style="position: static; border: none; background: none; padding: 0;">
+            <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')" style="font-size: 0.7rem;">JA</button>
+            <button class="lang-btn" data-lang="vi" onclick="switchLang('vi')" style="font-size: 0.7rem;">VI</button>
+        </div>
+        <span class="navbar-username" id="userName"></span>
+        <div class="navbar-avatar" id="userAvatar"></div>
+        <button class="btn btn-sm btn-outline" onclick="logout()" 
+                data-ja="ログアウト" data-vi="Đăng xuất">ログアウト</button>
+    </div>
+</nav>
+
+<!-- Main Content: Map + Search Panel -->
+<div class="main-content">
+    <div class="map-container">
+        <!-- Google Map -->
+        <div id="map"></div>
+
+        <!-- Search Panel (floating over map) -->
+        <div class="search-panel glass-card">
+            <h2>
+                <span>📍</span>
+                <span data-ja="ルート検索" data-vi="Tìm lộ trình">ルート検索</span>
+            </h2>
+
+            <!-- Pickup -->
+            <div class="location-input-group">
+                <div class="location-dot pickup"></div>
+                <input type="text" 
+                       id="pickupInput"
+                       class="form-input"
+                       data-placeholder-ja="乗車地を入力"
+                       data-placeholder-vi="Nhập điểm đón"
+                       placeholder="乗車地を入力"
+                       autocomplete="off">
+            </div>
+
+            <!-- Connector line -->
+            <div style="margin-left: 1.28rem; height: 12px; border-left: 2px dashed var(--border-color);"></div>
+
+            <!-- Destination -->
+            <div class="location-input-group">
+                <div class="location-dot destination"></div>
+                <input type="text" 
+                       id="destinationInput"
+                       class="form-input"
+                       data-placeholder-ja="降車地を入力"
+                       data-placeholder-vi="Nhập điểm đến"
+                       placeholder="降車地を入力"
+                       autocomplete="off">
+            </div>
+
+            <!-- Current Location Button -->
+            <button class="btn btn-outline btn-sm w-full mt-md" onclick="useCurrentLocation()" id="currentLocBtn">
+                <span>📍</span>
+                <span data-ja="現在地を使用" data-vi="Dùng vị trí hiện tại">現在地を使用</span>
+            </button>
+
+            <!-- Search Route Button -->
+            <button class="btn btn-accent w-full mt-md" onclick="searchRoute()" id="searchRouteBtn">
+                <span>🔍</span>
+                <span data-ja="ルート検索" data-vi="Tìm lộ trình">ルート検索</span>
+            </button>
+
+            <!-- Route Results (hidden by default) -->
+            <div id="routeResults" class="route-results">
+                <!-- Distance & Duration -->
+                <div class="route-info">
+                    <div class="route-info-item">
+                        <div class="route-info-value" id="routeDistance">--</div>
+                        <div class="route-info-label" data-ja="距離" data-vi="Khoảng cách">距離</div>
+                    </div>
+                    <div class="route-info-item">
+                        <div class="route-info-value" id="routeDuration">--</div>
+                        <div class="route-info-label" data-ja="所要時間" data-vi="Thời gian">所要時間</div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Selection -->
+                <h3 style="font-size: 0.9rem; margin-bottom: var(--space-sm);"
+                    data-ja="車種を選択" data-vi="Chọn loại xe">車種を選択</h3>
+
+                <div class="vehicle-list" id="vehicleList">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <!-- Confirm Booking Button -->
+                <button class="btn btn-primary w-full mt-lg" onclick="confirmBooking()" id="bookBtn" disabled>
+                    <span data-ja="配車を確定" data-vi="Xác nhận đặt xe">配車を確定</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Success Overlay -->
+<div class="booking-overlay" id="bookingOverlay">
+    <div class="booking-modal glass-card">
+        <div class="booking-success-icon">✅</div>
+        <h2 data-ja="配車リクエスト送信完了" data-vi="Đặt xe thành công">配車リクエスト送信完了</h2>
+        <p style="color: var(--text-secondary); margin-top: var(--space-md);"
+           data-ja="ドライバーを検索中です。しばらくお待ちください..."
+           data-vi="Đang tìm tài xế cho bạn. Vui lòng đợi...">
+            ドライバーを検索中です。しばらくお待ちください...
+        </p>
+        <div style="margin-top: var(--space-xl);">
+            <div class="btn-loading" style="display: inline-flex; gap: 8px; color: var(--primary-400); font-size: 0.9rem;">
+                <div style="width: 18px; height: 18px; border: 2px solid rgba(99,102,241,0.3); border-top-color: var(--primary-400); border-radius: 50%; animation: spin 0.6s linear infinite;"></div>
+                <span data-ja="検索中..." data-vi="Đang tìm...">検索中...</span>
+            </div>
+        </div>
+        <button class="btn btn-outline mt-lg" onclick="closeBookingOverlay()"
+                data-ja="閉じる" data-vi="Đóng">閉じる</button>
+    </div>
+</div>
+
+<script th:src="@{/js/i18n.js}"></script>
+<script>
+    const GOOGLE_MAPS_API_KEY = '[[${@environment.getProperty("google.maps.api-key")}]]' || 'AIzaSyD9AOLzJarLIGW0b-eWq_JEVDf0IcmxE0U';
+</script>
+<script th:src="@{/js/map.js}"></script>
+<script th:src="@{/js/booking.js}"></script>
+
+<!-- Load Google Maps API -->
+<script>
+    // Dynamic Google Maps script loading
+    (function() {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    })();
+</script>
+</body>
+</html>
