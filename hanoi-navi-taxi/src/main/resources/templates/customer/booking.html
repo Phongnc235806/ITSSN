@@ -141,21 +141,35 @@
 
         <section class="booking-map-card" aria-label="地図表示エリア">
             <div id="map" class="booking-map"></div>
+            <div id="bookingMapFallback" class="booking-map-fallback" role="status" aria-live="polite"
+                 data-ja="Google Mapsを読み込み中です..." data-vi="Đang tải Google Maps...">Google Mapsを読み込み中です...</div>
         </section>
     </section>
 </main>
 
-<script th:src="@{/js/i18n.js}"></script>
+<script src="../../static/js/i18n.js" th:src="@{/js/i18n.js}"></script>
 <script th:inline="javascript">
-    const GOOGLE_MAPS_API_KEY = /*[[${@environment.getProperty('google.maps.api-key')}]]*/ '';
+    const GOOGLE_MAPS_API_KEY = /*[[${@environment.getProperty('google.maps.api-key')}]]*/ 'AIzaSyD9AOLzJarLIGW0b-eWq_JEVDf0IcmxE0U';
 </script>
-<script th:src="@{/js/booking.js}"></script>
+<script src="../../static/js/booking.js" th:src="@{/js/booking.js}"></script>
 <script>
     (function() {
+        if (!GOOGLE_MAPS_API_KEY) {
+            window.handleBookingMapLoadError && window.handleBookingMapLoadError();
+            return;
+        }
+
+        window.gm_authFailure = function() {
+            window.handleBookingMapLoadError && window.handleBookingMapLoadError();
+        };
+
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initBookingMap`;
         script.async = true;
         script.defer = true;
+        script.onerror = function() {
+            window.handleBookingMapLoadError && window.handleBookingMapLoadError();
+        };
         document.head.appendChild(script);
     })();
 </script>

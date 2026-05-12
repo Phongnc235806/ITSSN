@@ -731,6 +731,26 @@
     width: 100%;
 }
 
+.booking-map-fallback {
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 244, 188, 0.94), rgba(238, 245, 249, 0.96));
+    color: #111;
+    display: flex;
+    font-size: 0.95rem;
+    font-weight: 900;
+    inset: 0;
+    justify-content: center;
+    line-height: 1.45;
+    padding: 2rem;
+    position: absolute;
+    text-align: center;
+    z-index: 2;
+}
+
+.booking-map-fallback.is-hidden {
+    display: none;
+}
+
 .booking-body .gm-style .gm-style-cc,
 .booking-body .gm-style a[href^="https://maps.google.com/maps"] {
     font-weight: 700;

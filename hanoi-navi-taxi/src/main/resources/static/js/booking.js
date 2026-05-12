@@ -9,6 +9,7 @@ let bookingRouteData = null;
 let bookingVehicle = null;
 let selectedCouponDiscount = 10;
 let driverMarker = null;
+let bookingPageInitialized = false;
 
 const BOOKING_DRIVER = {
     name: { ja: 'プロフィール', vi: 'Hồ sơ' },
@@ -49,20 +50,40 @@ function confirmBooking() {
 }
 
 /**
- * Initialize booking page with Google Maps route and side-panel state.
+ * Initialize booking page data and side-panel state independently from Google Maps.
  */
-function initBookingMap() {
+function initBookingPage() {
+    if (bookingPageInitialized) return Boolean(bookingRouteData);
+
     bookingRouteData = JSON.parse(sessionStorage.getItem('pendingBooking') || 'null');
     if (!bookingRouteData) {
         window.location.href = '/customer/home';
-        return;
+        return false;
     }
 
+    bookingPageInitialized = true;
     loadUserInfo();
     hydrateBookingDetails();
     renderBookingVehicles();
+    showBookingStep('request');
+    return true;
+}
 
-    bookingMap = new google.maps.Map(document.getElementById('map'), {
+/**
+ * Initialize booking page with Google Maps route and side-panel state.
+ */
+function initBookingMap() {
+    if (!initBookingPage()) return;
+
+    if (!window.google?.maps) {
+        handleBookingMapLoadError();
+        return;
+    }
+
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return;
+
+    bookingMap = new google.maps.Map(mapElement, {
         center: { lat: bookingRouteData.pickupLat, lng: bookingRouteData.pickupLng },
         zoom: 14,
         disableDefaultUI: true,
@@ -84,7 +105,7 @@ function initBookingMap() {
     });
 
     drawBookingRoute(false);
-    showBookingStep('request');
+    updateBookingMapFallback(false);
 }
 
 function hydrateBookingDetails() {
@@ -209,7 +230,7 @@ function showBookingStep(step) {
 }
 
 function drawBookingRoute(includeDriver) {
-    if (!bookingDirectionsService || !bookingDirectionsRenderer) return;
+    if (!bookingDirectionsService || !bookingDirectionsRenderer || !window.google?.maps) return;
 
     bookingDirectionsService.route({
         origin: { lat: bookingRouteData.pickupLat, lng: bookingRouteData.pickupLng },
@@ -300,6 +321,22 @@ function closeBookingOverlay() {
     cancelTracking();
 }
 
+function updateBookingMapFallback(visible, message) {
+    const fallback = document.getElementById('bookingMapFallback');
+    if (!fallback) return;
+
+    if (message) fallback.textContent = message;
+    fallback.classList.toggle('is-hidden', !visible);
+}
+
+function handleBookingMapLoadError() {
+    initBookingPage();
+    updateBookingMapFallback(true, t(
+        'Google Mapsを読み込めませんでした。APIキーとネットワーク設定を確認してください。',
+        'Không thể tải Google Maps. Vui lòng kiểm tra API key và kết nối mạng.'
+    ));
+}
+
 function formatVnd(value) {
     return new Intl.NumberFormat('vi-VN').format(Number(value || 0)) + '₫';
 }
@@ -326,4 +363,9 @@ document.addEventListener('languageChanged', () => {
     if (!bookingRouteData) return;
     renderBookingVehicles();
     updateVehicleInfoText();
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('bookingVehicleList')) initBookingPage();
 });
