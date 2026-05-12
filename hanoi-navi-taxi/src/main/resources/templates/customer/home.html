@@ -7,81 +7,86 @@
     <title>ホーム / Trang chủ - ハノイ・ナビタクシー</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
+<body class="landing-body">
 
 <!-- Navbar -->
-<nav class="navbar">
-    <div class="navbar-brand">
-        <span class="icon">🚕</span>
-        <span>ハノイ・ナビタクシー</span>
+<nav class="navbar landing-navbar" aria-label="メインナビゲーション">
+    <a class="navbar-brand landing-brand" href="/customer/home" aria-label="ハノイ・ナビタクシー ホーム">
+        <span class="brand-mark" aria-hidden="true">🚕</span>
+        <span class="brand-copy">
+            <strong>ハノイ</strong>
+            <strong>ナビタクシー</strong>
+        </span>
+    </a>
+
+    <div class="landing-nav-links" aria-label="主要メニュー">
+        <a class="landing-nav-link active" href="/customer/home" data-ja="ホーム" data-vi="Trang chủ">ホーム</a>
+        <a class="landing-nav-link" href="/customer/booking" data-ja="予約する" data-vi="Đặt xe">予約する</a>
+        <a class="landing-nav-link" href="#history" data-ja="履歴" data-vi="Lịch sử">履歴</a>
     </div>
-    <div class="navbar-user">
-        <div class="lang-switcher" style="position: static; border: none; background: none; padding: 0;">
-            <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')" style="font-size: 0.7rem;">JA</button>
-            <button class="lang-btn" data-lang="vi" onclick="switchLang('vi')" style="font-size: 0.7rem;">VI</button>
+
+    <div class="navbar-user landing-userbar">
+        <button class="notification-btn" type="button" aria-label="通知">
+            <span aria-hidden="true">🔔</span>
+            <span class="notification-dot" aria-hidden="true"></span>
+        </button>
+        <button class="profile-chip" type="button" aria-label="ユーザープロフィール">
+            <span class="navbar-avatar profile-avatar" id="userAvatar"></span>
+            <span class="navbar-username" id="userName" data-ja="ユーザー名" data-vi="Tên người dùng">ユーザー名</span>
+            <span class="profile-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="lang-switcher landing-lang-switcher">
+            <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')">JA</button>
+            <button class="lang-btn" data-lang="vi" onclick="switchLang('vi')">VI</button>
         </div>
-        <span class="navbar-username" id="userName"></span>
-        <div class="navbar-avatar" id="userAvatar"></div>
-        <button class="btn btn-sm btn-outline" onclick="logout()" 
+        <button class="btn btn-sm btn-outline landing-logout" onclick="logout()"
                 data-ja="ログアウト" data-vi="Đăng xuất">ログアウト</button>
     </div>
 </nav>
 
-<!-- Main Content: Map + Search Panel -->
-<div class="main-content">
-    <div class="map-container">
-        <!-- Google Map -->
-        <div id="map"></div>
+<!-- Main Content: Simple Landing Search -->
+<main class="landing-main">
+    <div id="map" class="landing-hidden-map" aria-hidden="true"></div>
 
-        <!-- Search Panel (floating over map) -->
-        <div class="search-panel glass-card">
-            <h2>
-                <span>📍</span>
-                <span data-ja="ルート検索" data-vi="Tìm lộ trình">ルート検索</span>
-            </h2>
+    <section class="landing-hero" aria-labelledby="landingTitle">
+        <div class="landing-search-card">
+            <h1 id="landingTitle" data-ja="あなたの旅を今すぐ始めよう!" data-vi="Bắt đầu chuyến đi của bạn ngay!">あなたの旅を今すぐ始めよう!</h1>
 
-            <!-- Pickup -->
-            <div class="location-input-group">
-                <div class="location-dot pickup"></div>
-                <input type="text" 
-                       id="pickupInput"
-                       class="form-input"
-                       data-placeholder-ja="乗車地を入力"
-                       data-placeholder-vi="Nhập điểm đón"
-                       placeholder="乗車地を入力"
-                       autocomplete="off">
+            <div class="landing-search-row" aria-label="ルート検索フォーム">
+                <label class="landing-input-wrap" for="pickupInput">
+                    <span class="sr-only" data-ja="出発地" data-vi="Điểm đi">出発地</span>
+                    <input type="text"
+                           id="pickupInput"
+                           class="form-input landing-location-input"
+                           data-placeholder-ja="出発地"
+                           data-placeholder-vi="Điểm đi"
+                           placeholder="出発地"
+                           autocomplete="off">
+                    <span class="landing-pin" aria-hidden="true">●</span>
+                </label>
+
+                <label class="landing-input-wrap" for="destinationInput">
+                    <span class="sr-only" data-ja="目的地" data-vi="Điểm đến">目的地</span>
+                    <input type="text"
+                           id="destinationInput"
+                           class="form-input landing-location-input"
+                           data-placeholder-ja="目的地"
+                           data-placeholder-vi="Điểm đến"
+                           placeholder="目的地"
+                           autocomplete="off">
+                    <span class="landing-pin" aria-hidden="true">●</span>
+                </label>
             </div>
 
-            <!-- Connector line -->
-            <div style="margin-left: 1.28rem; height: 12px; border-left: 2px dashed var(--border-color);"></div>
-
-            <!-- Destination -->
-            <div class="location-input-group">
-                <div class="location-dot destination"></div>
-                <input type="text" 
-                       id="destinationInput"
-                       class="form-input"
-                       data-placeholder-ja="降車地を入力"
-                       data-placeholder-vi="Nhập điểm đến"
-                       placeholder="降車地を入力"
-                       autocomplete="off">
+            <div class="landing-actions">
+                <button class="btn btn-accent landing-search-btn" onclick="searchRoute()" id="searchRouteBtn">
+                    <span data-ja="検索する" data-vi="Tìm kiếm">検索する</span>
+                </button>
+                <button class="landing-current-location" type="button" onclick="useCurrentLocation()" id="currentLocBtn"
+                        data-ja="現在地を使用" data-vi="Dùng vị trí hiện tại">現在地を使用</button>
             </div>
 
-            <!-- Current Location Button -->
-            <button class="btn btn-outline btn-sm w-full mt-md" onclick="useCurrentLocation()" id="currentLocBtn">
-                <span>📍</span>
-                <span data-ja="現在地を使用" data-vi="Dùng vị trí hiện tại">現在地を使用</span>
-            </button>
-
-            <!-- Search Route Button -->
-            <button class="btn btn-accent w-full mt-md" onclick="searchRoute()" id="searchRouteBtn">
-                <span>🔍</span>
-                <span data-ja="ルート検索" data-vi="Tìm lộ trình">ルート検索</span>
-            </button>
-
-            <!-- Route Results (hidden by default) -->
-            <div id="routeResults" class="route-results">
-                <!-- Distance & Duration -->
+            <div id="routeResults" class="route-results landing-route-results" aria-live="polite">
                 <div class="route-info">
                     <div class="route-info-item">
                         <div class="route-info-value" id="routeDistance">--</div>
@@ -93,22 +98,36 @@
                     </div>
                 </div>
 
-                <!-- Vehicle Selection -->
-                <h3 style="font-size: 0.9rem; margin-bottom: var(--space-sm);"
-                    data-ja="車種を選択" data-vi="Chọn loại xe">車種を選択</h3>
-
-                <div class="vehicle-list" id="vehicleList">
-                    <!-- Populated by JavaScript -->
-                </div>
-
-                <!-- Confirm Booking Button -->
+                <h2 class="landing-vehicle-title" data-ja="車種を選択" data-vi="Chọn loại xe">車種を選択</h2>
+                <div class="vehicle-list" id="vehicleList"></div>
                 <button class="btn btn-primary w-full mt-lg" onclick="confirmBooking()" id="bookBtn" disabled>
                     <span data-ja="配車を確定" data-vi="Xác nhận đặt xe">配車を確定</span>
                 </button>
             </div>
         </div>
-    </div>
-</div>
+
+        <div class="hanoi-illustration" aria-hidden="true">
+            <div class="sun-hill"></div>
+            <div class="landmark landmark-left">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="gate">
+                <div class="gate-roof top"></div>
+                <div class="gate-roof mid"></div>
+                <div class="gate-body">
+                    <div class="tower left"></div>
+                    <div class="arch"></div>
+                    <div class="tower right"></div>
+                </div>
+            </div>
+            <div class="torii torii-left"></div>
+            <div class="torii torii-right"></div>
+            <div class="landmark landmark-right">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </section>
+</main>
 
 <!-- Booking Success Overlay -->
 <div class="booking-overlay" id="bookingOverlay">
