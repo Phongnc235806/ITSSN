@@ -56,14 +56,10 @@
 .brand-mark {
     width: 58px;
     height: 38px;
-    border: 2px solid var(--landing-line);
-    border-radius: 11px;
-    background: #fff;
+    background: #ffffff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
-    box-shadow: 0 3px 0 var(--landing-line);
     overflow: hidden;
 }
 
@@ -111,9 +107,7 @@
 
 .notification-btn,
 .profile-chip {
-    border: 1.5px solid var(--landing-yellow-dark);
     background: #fff;
-    color: var(--landing-ink);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -121,10 +115,10 @@
 }
 
 .notification-btn {
+    border: 1.5px solid var(--landing-white);
     position: relative;
     width: 34px;
     height: 30px;
-    border-radius: 2px;
     padding: 0;
 }
 
@@ -146,6 +140,7 @@
 }
 
 .profile-chip {
+    border: 1.5px solid var(--landing-yellow-dark);
     gap: 0.45rem;
     min-height: 36px;
     padding: 0.25rem 0.5rem 0.25rem 0.3rem;
