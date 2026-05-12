@@ -30,7 +30,7 @@
         </button>
         <button class="profile-chip" type="button" aria-label="ユーザープロフィール">
             <span class="navbar-avatar profile-avatar" id="userAvatar"></span>
-            <span class="navbar-username" id="userName" data-ja="ユーザー名" data-vi="Tên người dùng">ユーザー名</span>
+            <span class="navbar-username" id="userName" data-i18n-skip="true" data-ja="ユーザー名" data-vi="Tên người dùng">ユーザー名</span>
             <span class="profile-chevron" aria-hidden="true">⌄</span>
         </button>
         <div class="lang-switcher landing-lang-switcher">
@@ -129,8 +129,8 @@
 </div>
 
 <script th:src="@{/js/i18n.js}"></script>
-<script>
-    const GOOGLE_MAPS_API_KEY = '[[${@environment.getProperty("google.maps.api-key")}]]' || 'AIzaSyD9AOLzJarLIGW0b-eWq_JEVDf0IcmxE0U';
+<script th:inline="javascript">
+    const GOOGLE_MAPS_API_KEY = /*[[${@environment.getProperty('google.maps.api-key')}]]*/ '';
 </script>
 <script th:src="@{/js/map.js}"></script>
 <script th:src="@{/js/booking.js}"></script>
