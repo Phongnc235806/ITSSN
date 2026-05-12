@@ -12,7 +12,9 @@
 <!-- Navbar -->
 <nav class="navbar landing-navbar" aria-label="メインナビゲーション">
     <a class="navbar-brand landing-brand" href="/customer/home" aria-label="ハノイ・ナビタクシー ホーム">
-        <span class="brand-mark" aria-hidden="true">🚕</span>
+        <span class="brand-mark" aria-hidden="true">
+            <img src="../../static/images/car_icon.png" th:src="@{/images/car_icon.png}" alt="">
+        </span>
         <span class="brand-copy">
             <strong>ハノイ</strong>
             <strong>ナビタクシー</strong>
@@ -27,7 +29,7 @@
 
     <div class="navbar-user landing-userbar">
         <button class="notification-btn" type="button" aria-label="通知">
-            <span aria-hidden="true">🔔</span>
+            <img class="notification-icon" src="../../static/images/bell_icon.png" th:src="@{/images/bell_icon.png}" alt="" aria-hidden="true">
             <span class="notification-dot" aria-hidden="true"></span>
         </button>
         <button class="profile-chip" type="button" aria-label="ユーザープロフィール">
@@ -106,26 +108,6 @@
             </div>
         </div>
 
-        <div class="hanoi-illustration" aria-hidden="true">
-            <div class="sun-hill"></div>
-            <div class="landmark landmark-left">
-                <span></span><span></span><span></span><span></span>
-            </div>
-            <div class="gate">
-                <div class="gate-roof top"></div>
-                <div class="gate-roof mid"></div>
-                <div class="gate-body">
-                    <div class="tower left"></div>
-                    <div class="arch"></div>
-                    <div class="tower right"></div>
-                </div>
-            </div>
-            <div class="torii torii-left"></div>
-            <div class="torii torii-right"></div>
-            <div class="landmark landmark-right">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
     </section>
 </main>
 
