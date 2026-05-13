@@ -30,6 +30,28 @@ const BOOKING_VEHICLE_DESCRIPTIONS = {
     PREMIUM: { ja: '高級で快適な移動体験', vi: 'Trải nghiệm cao cấp' }
 };
 
+const STATIC_PREVIEW_BOOKING_DATA = {
+    pickupAddress: 'Hoàn Kiếm, Hà Nội',
+    pickupLat: 21.028511,
+    pickupLng: 105.804817,
+    destinationAddress: 'Hồ Tây, Hà Nội',
+    destinationLat: 21.058273,
+    destinationLng: 105.821362,
+    distanceKm: 6.2,
+    durationMin: 18,
+    vehicleType: 'SEDAN',
+    fare: 113000,
+    fareFormatted: '113.000₫'
+};
+
+function isStaticFilePreview() {
+    return window.location.protocol === 'file:';
+}
+
+function navigateToAppPage(appPath, staticPath) {
+    window.location.href = isStaticFilePreview() ? staticPath : appPath;
+}
+
 /**
  * Confirm booking from customer home (ID 3 → ID 4)
  */
@@ -46,7 +68,7 @@ function confirmBooking() {
         fareFormatted: selectedVehicle.fareFormatted
     };
     sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
-    window.location.href = '/customer/booking';
+    navigateToAppPage('/customer/booking', '../../templates/customer/booking.html');
 }
 
 /**
@@ -57,8 +79,13 @@ function initBookingPage() {
 
     bookingRouteData = JSON.parse(sessionStorage.getItem('pendingBooking') || 'null');
     if (!bookingRouteData) {
-        window.location.href = '/customer/home';
-        return false;
+        if (!isStaticFilePreview()) {
+            navigateToAppPage('/customer/home', '../../templates/customer/home.html');
+            return false;
+        }
+
+        bookingRouteData = { ...STATIC_PREVIEW_BOOKING_DATA };
+        sessionStorage.setItem('pendingBooking', JSON.stringify(bookingRouteData));
     }
 
     bookingPageInitialized = true;
@@ -269,7 +296,7 @@ async function submitBooking() {
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.token) {
-        window.location.href = '/login';
+        navigateToAppPage('/login', '../../templates/auth/login.html');
         return;
     }
 
@@ -314,7 +341,7 @@ async function submitBooking() {
 
 function cancelTracking() {
     sessionStorage.removeItem('pendingBooking');
-    window.location.href = '/customer/home';
+    navigateToAppPage('/customer/home', '../../templates/customer/home.html');
 }
 
 function closeBookingOverlay() {
@@ -343,20 +370,22 @@ function formatVnd(value) {
 
 function loadUserInfo() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!user.token) {
-        window.location.href = '/login';
+    if (!user.token && !isStaticFilePreview()) {
+        navigateToAppPage('/login', '../../templates/auth/login.html');
         return;
     }
+
+    const displayName = user.fullName || t('ユーザー名', 'Tên người dùng');
     const name = document.getElementById('userName');
     const avatar = document.getElementById('userAvatar');
-    if (name) name.textContent = user.fullName || t('ユーザー名', 'Tên người dùng');
-    if (avatar) avatar.textContent = (user.fullName || '?').charAt(0).toUpperCase();
+    if (name) name.textContent = displayName;
+    if (avatar) avatar.textContent = displayName.charAt(0).toUpperCase();
 }
 
 function logout() {
     localStorage.removeItem('user');
     document.cookie = 'jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    window.location.href = '/login';
+    navigateToAppPage('/login', '../../templates/auth/login.html');
 }
 
 document.addEventListener('languageChanged', () => {
