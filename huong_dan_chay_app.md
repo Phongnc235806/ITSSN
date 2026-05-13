@@ -1,8 +1,5 @@
 # Hướng dẫn chạy Hanoi Navi-Taxi
 
-> [!TIP]
-> **Đổi Google Maps API Key**: Mở file [application.yml](file:///C:/Users/NITRO5/.gemini/antigravity/scratch/hanoi-navi-taxi/src/main/resources/application.yml) → **dòng 57** (đúng chỗ con trỏ bạn đang đặt) → thay key mới vào.
-
 ---
 
 ## Cách 1: Docker Compose (Đơn giản nhất ⭐)
