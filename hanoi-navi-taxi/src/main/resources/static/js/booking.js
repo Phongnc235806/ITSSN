@@ -9,6 +9,7 @@ let bookingRouteData = null;
 let bookingVehicle = null;
 let selectedCouponDiscount = 10;
 let driverMarker = null;
+let bookingPageInitialized = false;
 
 const BOOKING_DRIVER = {
     name: { ja: 'プロフィール', vi: 'Hồ sơ' },
@@ -29,6 +30,28 @@ const BOOKING_VEHICLE_DESCRIPTIONS = {
     PREMIUM: { ja: '高級で快適な移動体験', vi: 'Trải nghiệm cao cấp' }
 };
 
+const STATIC_PREVIEW_BOOKING_DATA = {
+    pickupAddress: 'Hoàn Kiếm, Hà Nội',
+    pickupLat: 21.028511,
+    pickupLng: 105.804817,
+    destinationAddress: 'Hồ Tây, Hà Nội',
+    destinationLat: 21.058273,
+    destinationLng: 105.821362,
+    distanceKm: 6.2,
+    durationMin: 18,
+    vehicleType: 'SEDAN',
+    fare: 113000,
+    fareFormatted: '113.000₫'
+};
+
+function isStaticFilePreview() {
+    return window.location.protocol === 'file:';
+}
+
+function navigateToAppPage(appPath, staticPath) {
+    window.location.href = isStaticFilePreview() ? staticPath : appPath;
+}
+
 /**
  * Confirm booking from customer home (ID 3 → ID 4)
  */
@@ -45,24 +68,49 @@ function confirmBooking() {
         fareFormatted: selectedVehicle.fareFormatted
     };
     sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
-    window.location.href = '/customer/booking';
+    navigateToAppPage('/customer/booking', '../../templates/customer/booking.html');
+}
+
+/**
+ * Initialize booking page data and side-panel state independently from Google Maps.
+ */
+function initBookingPage() {
+    if (bookingPageInitialized) return Boolean(bookingRouteData);
+
+    bookingRouteData = JSON.parse(sessionStorage.getItem('pendingBooking') || 'null');
+    if (!bookingRouteData) {
+        if (!isStaticFilePreview()) {
+            navigateToAppPage('/customer/home', '../../templates/customer/home.html');
+            return false;
+        }
+
+        bookingRouteData = { ...STATIC_PREVIEW_BOOKING_DATA };
+        sessionStorage.setItem('pendingBooking', JSON.stringify(bookingRouteData));
+    }
+
+    bookingPageInitialized = true;
+    loadUserInfo();
+    hydrateBookingDetails();
+    renderBookingVehicles();
+    showBookingStep('request');
+    return true;
 }
 
 /**
  * Initialize booking page with Google Maps route and side-panel state.
  */
 function initBookingMap() {
-    bookingRouteData = JSON.parse(sessionStorage.getItem('pendingBooking') || 'null');
-    if (!bookingRouteData) {
-        window.location.href = '/customer/home';
+    if (!initBookingPage()) return;
+
+    if (!window.google?.maps) {
+        handleBookingMapLoadError();
         return;
     }
 
-    loadUserInfo();
-    hydrateBookingDetails();
-    renderBookingVehicles();
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return;
 
-    bookingMap = new google.maps.Map(document.getElementById('map'), {
+    bookingMap = new google.maps.Map(mapElement, {
         center: { lat: bookingRouteData.pickupLat, lng: bookingRouteData.pickupLng },
         zoom: 14,
         disableDefaultUI: true,
@@ -84,7 +132,7 @@ function initBookingMap() {
     });
 
     drawBookingRoute(false);
-    showBookingStep('request');
+    updateBookingMapFallback(false);
 }
 
 function hydrateBookingDetails() {
@@ -209,7 +257,7 @@ function showBookingStep(step) {
 }
 
 function drawBookingRoute(includeDriver) {
-    if (!bookingDirectionsService || !bookingDirectionsRenderer) return;
+    if (!bookingDirectionsService || !bookingDirectionsRenderer || !window.google?.maps) return;
 
     bookingDirectionsService.route({
         origin: { lat: bookingRouteData.pickupLat, lng: bookingRouteData.pickupLng },
@@ -248,7 +296,7 @@ async function submitBooking() {
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.token) {
-        window.location.href = '/login';
+        navigateToAppPage('/login', '../../templates/auth/login.html');
         return;
     }
 
@@ -293,11 +341,27 @@ async function submitBooking() {
 
 function cancelTracking() {
     sessionStorage.removeItem('pendingBooking');
-    window.location.href = '/customer/home';
+    navigateToAppPage('/customer/home', '../../templates/customer/home.html');
 }
 
 function closeBookingOverlay() {
     cancelTracking();
+}
+
+function updateBookingMapFallback(visible, message) {
+    const fallback = document.getElementById('bookingMapFallback');
+    if (!fallback) return;
+
+    if (message) fallback.textContent = message;
+    fallback.classList.toggle('is-hidden', !visible);
+}
+
+function handleBookingMapLoadError() {
+    initBookingPage();
+    updateBookingMapFallback(true, t(
+        'Google Mapsを読み込めませんでした。APIキーとネットワーク設定を確認してください。',
+        'Không thể tải Google Maps. Vui lòng kiểm tra API key và kết nối mạng.'
+    ));
 }
 
 function formatVnd(value) {
@@ -306,24 +370,31 @@ function formatVnd(value) {
 
 function loadUserInfo() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!user.token) {
-        window.location.href = '/login';
+    if (!user.token && !isStaticFilePreview()) {
+        navigateToAppPage('/login', '../../templates/auth/login.html');
         return;
     }
+
+    const displayName = user.fullName || t('ユーザー名', 'Tên người dùng');
     const name = document.getElementById('userName');
     const avatar = document.getElementById('userAvatar');
-    if (name) name.textContent = user.fullName || t('ユーザー名', 'Tên người dùng');
-    if (avatar) avatar.textContent = (user.fullName || '?').charAt(0).toUpperCase();
+    if (name) name.textContent = displayName;
+    if (avatar) avatar.textContent = displayName.charAt(0).toUpperCase();
 }
 
 function logout() {
     localStorage.removeItem('user');
     document.cookie = 'jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    window.location.href = '/login';
+    navigateToAppPage('/login', '../../templates/auth/login.html');
 }
 
 document.addEventListener('languageChanged', () => {
     if (!bookingRouteData) return;
     renderBookingVehicles();
     updateVehicleInfoText();
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('bookingVehicleList')) initBookingPage();
 });
