@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ダッシュボード / Bảng điều khiển - ハノイ・ナビタクシー</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="icon">🚕</span>
+        <span>ハノイ・ナビタクシー</span>
+        <span class="badge badge-online" style="background: rgba(99,102,241,0.15); color: var(--primary-400);">
+            <span>⚙️</span>
+            <span>Admin</span>
+        </span>
+    </div>
+    <div class="navbar-user">
+        <span class="navbar-username" id="adminName"></span>
+        <button class="btn btn-sm btn-outline" onclick="logout()"
+                data-ja="ログアウト" data-vi="Đăng xuất">ログアウト</button>
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="dashboard-container" style="padding-top: var(--space-xl);">
+
+        <h1 style="margin-bottom: var(--space-xl);"
+            data-ja="📊 管理者ダッシュボード" data-vi="📊 Bảng điều khiển Quản trị">📊 管理者ダッシュボード</h1>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card glass-card">
+                <div class="stat-value" id="totalUsers">--</div>
+                <div class="stat-label" data-ja="総ユーザー数" data-vi="Tổng người dùng">総ユーザー数</div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-value" id="totalDrivers">--</div>
+                <div class="stat-label" data-ja="ドライバー数" data-vi="Số tài xế">ドライバー数</div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-value" id="totalRides">--</div>
+                <div class="stat-label" data-ja="総乗車数" data-vi="Tổng chuyến đi">総乗車数</div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-value" id="totalRevenue">--</div>
+                <div class="stat-label" data-ja="総収入" data-vi="Tổng doanh thu">総収入</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="glass-card" style="padding: var(--space-xl); margin-bottom: var(--space-xl);">
+            <h2 style="margin-bottom: var(--space-lg);"
+                data-ja="クイックアクション" data-vi="Thao tác nhanh">クイックアクション</h2>
+            <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+                <button class="btn btn-outline" data-ja="👥 ユーザー管理" data-vi="👥 Quản lý người dùng">👥 ユーザー管理</button>
+                <button class="btn btn-outline" data-ja="🚗 ドライバー管理" data-vi="🚗 Quản lý tài xế">🚗 ドライバー管理</button>
+                <button class="btn btn-outline" data-ja="🎫 クーポン管理" data-vi="🎫 Quản lý voucher">🎫 クーポン管理</button>
+                <button class="btn btn-outline" data-ja="📈 レポート" data-vi="📈 Báo cáo">📈 レポート</button>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="glass-card" style="padding: var(--space-xl);">
+            <h2 style="margin-bottom: var(--space-lg);"
+                data-ja="最近のアクティビティ" data-vi="Hoạt động gần đây">最近のアクティビティ</h2>
+            <div style="text-align: center; padding: var(--space-xl); color: var(--text-muted);">
+                <div style="font-size: 2rem; margin-bottom: var(--space-sm);">📋</div>
+                <p data-ja="まだアクティビティがありません" data-vi="Chưa có hoạt động nào">まだアクティビティがありません</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/i18n.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user.token) { window.location.href = '/login'; return; }
+        document.getElementById('adminName').textContent = user.fullName || 'Admin';
+    });
+
+    function logout() {
+        localStorage.removeItem('user');
+        document.cookie = 'jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        window.location.href = '/login';
+    }
+</script>
+</body>
+</html>
