@@ -21,7 +21,7 @@ function switchLang(lang) {
     });
 
     // Update all text elements with data-ja / data-vi attributes
-    document.querySelectorAll('[data-ja]:not([data-i18n-skip])').forEach(el => {
+    document.querySelectorAll('[data-ja]').forEach(el => {
         const text = el.getAttribute(`data-${lang}`);
         if (text) {
             el.textContent = text;
@@ -43,9 +43,6 @@ function switchLang(lang) {
 
     // Update page direction (both languages are LTR)
     document.documentElement.lang = lang;
-
-    // Let pages with dynamic content refresh translated values.
-    document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
 }
 
 /**
