@@ -2,9 +2,8 @@
 
 ---
 
-## Cách 1: Docker Compose (Đơn giản nhất ⭐)
+## Cách 1: Docker Compose 
 
-Chỉ cần cài Docker Desktop, không cần cài Java hay MySQL.
 
 ### Bước 1 — Cài Docker Desktop
 - Tải tại: https://www.docker.com/products/docker-desktop/
