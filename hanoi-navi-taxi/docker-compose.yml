@@ -11,11 +11,11 @@ services:
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,7 +30,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/navitaxi_db?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
-      GOOGLE_MAPS_API_KEY: AIzaSyD9AOLzJarLIGW0b-eWq_JEVDf0IcmxE0U
     depends_on:
       mysql:
         condition: service_healthy

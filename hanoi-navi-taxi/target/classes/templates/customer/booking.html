@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配車確認 / Xác nhận đặt xe - ハノイ・ナビタクシー</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="icon">🚕</span>
+        <a href="/customer/home" style="color: var(--text-primary);">ハノイ・ナビタクシー</a>
+    </div>
+    <div class="navbar-user">
+        <button class="btn btn-sm btn-outline" onclick="window.location.href='/customer/home'"
+                data-ja="戻る" data-vi="Quay lại">← 戻る</button>
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="map-container">
+        <div id="map"></div>
+
+        <!-- Booking Details Panel -->
+        <div class="search-panel glass-card" style="max-width: 420px;">
+            <h2>
+                <span>🚕</span>
+                <span data-ja="配車確認" data-vi="Xác nhận đặt xe">配車確認</span>
+            </h2>
+
+            <!-- Route Summary -->
+            <div style="margin-bottom: var(--space-lg);">
+                <div class="location-input-group" style="margin-bottom: var(--space-sm);">
+                    <div class="location-dot pickup"></div>
+                    <div class="form-input" id="bookingPickup" style="pointer-events: none; opacity: 0.8;">--</div>
+                </div>
+                <div style="margin-left: 1.28rem; height: 8px; border-left: 2px dashed var(--border-color);"></div>
+                <div class="location-input-group">
+                    <div class="location-dot destination"></div>
+                    <div class="form-input" id="bookingDestination" style="pointer-events: none; opacity: 0.8;">--</div>
+                </div>
+            </div>
+
+            <!-- Route Info -->
+            <div class="route-info">
+                <div class="route-info-item">
+                    <div class="route-info-value" id="bookingDistance">--</div>
+                    <div class="route-info-label" data-ja="距離" data-vi="Khoảng cách">距離</div>
+                </div>
+                <div class="route-info-item">
+                    <div class="route-info-value" id="bookingDuration">--</div>
+                    <div class="route-info-label" data-ja="所要時間" data-vi="Thời gian">所要時間</div>
+                </div>
+                <div class="route-info-item">
+                    <div class="route-info-value" id="bookingFare">--</div>
+                    <div class="route-info-label" data-ja="料金" data-vi="Giá cước">料金</div>
+                </div>
+            </div>
+
+            <!-- Selected Vehicle -->
+            <div style="margin-top: var(--space-lg); padding: var(--space-md); background: rgba(245,158,11,0.1); border-radius: var(--radius-md); border: 1px solid rgba(245,158,11,0.3);">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;"
+                     data-ja="選択した車種" data-vi="Loại xe đã chọn">選択した車種</div>
+                <div style="font-weight: 700; font-size: 1.1rem;" id="bookingVehicle">--</div>
+            </div>
+
+            <!-- Confirm Button -->
+            <button class="btn btn-accent w-full mt-lg" onclick="submitBooking()" id="confirmBookingBtn">
+                <span>🚕</span>
+                <span data-ja="配車を確定する" data-vi="Xác nhận đặt xe">配車を確定する</span>
+            </button>
+
+            <button class="btn btn-outline w-full mt-md" onclick="window.location.href='/customer/home'"
+                    data-ja="キャンセル" data-vi="Hủy bỏ">キャンセル</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/i18n.js}"></script>
+<script th:inline="javascript">
+    const GOOGLE_MAPS_API_KEY = /*[[${@environment.getProperty('google.maps.api-key')}]]*/ 'AIzaSyD9AOLzJarLIGW0b-eWq_JEVDf0IcmxE0U';
+</script>
+<script th:src="@{/js/booking.js}"></script>
+<script>
+    (function() {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initBookingMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    })();
+</script>
+</body>
+</html>
