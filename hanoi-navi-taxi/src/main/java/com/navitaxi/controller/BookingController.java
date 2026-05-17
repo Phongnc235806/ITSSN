@@ -52,4 +52,17 @@ public class BookingController {
         RideRequest ride = bookingService.getRideById(id);
         return ResponseEntity.ok(ApiResponse.success("OK", ride));
     }
+    /**
+     * API Hủy chuyến đi / 配車リクエストをキャンセル
+     * Đường dẫn: PUT http://localhost:8080/api/bookings/cancel/{id}
+     */
+    @PutMapping("/cancel/{id}")
+    public ResponseEntity<?> cancelBooking(@PathVariable Integer id) {
+        try {
+            RideRequest canceledRide = bookingService.cancelBooking(id);
+            return ResponseEntity.ok(canceledRide);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
