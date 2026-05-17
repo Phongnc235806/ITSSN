@@ -28,6 +28,9 @@ public class DriverProfile {
     @Column(name = "japanese_level", length = 20)
     private String japaneseLevel;
 
+    @Column(name = "driving_experience_years")
+    private Integer drivingExperienceYears;
+
     @Column(name = "license_number", length = 50)
     private String licenseNumber;
 

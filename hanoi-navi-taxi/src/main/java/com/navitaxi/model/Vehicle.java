@@ -31,9 +31,6 @@ public class Vehicle {
     @Column(name = "brand", length = 100)
     private String brand;
 
-    @Column(name = "license_plate", nullable = false, length = 20)
-    private String licensePlate;
-
     @Column(name = "color", length = 50)
     private String color;
 

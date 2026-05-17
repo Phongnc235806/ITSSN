@@ -18,6 +18,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     full_name     VARCHAR(100) NOT NULL,
     phone_number  VARCHAR(20),
+    avatar_url    VARCHAR(512),
+    address       VARCHAR(255),
     role          VARCHAR(50) NOT NULL,
     status        VARCHAR(30) DEFAULT 'ACTIVE',
     created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -31,6 +33,7 @@ CREATE TABLE driver_profiles (
     driver_id      INT AUTO_INCREMENT PRIMARY KEY,
     user_id        INT NOT NULL UNIQUE,
     japanese_level VARCHAR(20),
+    driving_experience_years INT,
     license_number VARCHAR(50),
     is_available   BOOLEAN DEFAULT FALSE,
     created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -44,7 +47,6 @@ CREATE TABLE vehicles (
     driver_id    INT NOT NULL,
     vehicle_type VARCHAR(20) NOT NULL,
     brand        VARCHAR(100),
-    license_plate VARCHAR(20) NOT NULL,
     color        VARCHAR(50),
     status       VARCHAR(20) DEFAULT 'ACTIVE',
     created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -120,7 +122,8 @@ CREATE TABLE vouchers (
     end_date       DATETIME,
     status         VARCHAR(30) DEFAULT 'ACTIVE',
     created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_vouchers_status_dates (status, start_date, end_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 9. User Vouchers table
